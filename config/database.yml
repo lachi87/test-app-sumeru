@@ -1,0 +1,35 @@
+default: &default
+  adapter:   mysql2
+  reconnect: true
+  encoding: utf8
+  pool: 5
+
+local: &local
+  <<: *default
+  username: root
+  password: root
+  host: 127.0.0.1
+
+remote: &remote
+  <<: *default
+  database: <%= ENV['DATABASE'] %>
+  username: <%= ENV['DB_USER'] %>
+  password: <%= ENV['DB_PASSWORD'] %>
+  host: <%= ENV['DB_HOST'] %>
+  pool: 25
+  sslca: '/var/rds-combined-ca-bundle.pem'
+  ssl_mode: verify_ca
+
+development:
+  <<: *local
+  database: <%= ENV['DATABASE'] || 'ygrene_development' %>
+
+test:
+  <<: *local
+  database: ygrene_test<%= ENV['TEST_ENV_NUMBER'] %>
+
+production:
+  <<: *remote
+
+staging:
+  <<: *remote
